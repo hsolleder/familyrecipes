@@ -1,0 +1,32 @@
+id: vietnamese-cauliflower-carrot-and-potato-curry-20260314
+name: Vietnamese Cauliflower, Carrot and Potato Curry
+source:
+  type: book
+  bookName: The Asian Pantry
+ingredients:
+  - name: Onion
+    amount: '1'
+  - name: Garlic
+    amount: 4 cloves
+  - name: Potato
+    amount: 1 medium
+  - name: Carrot
+    amount: 2 large
+  - name: Cauliflower
+    amount: 1 medium
+portions: 4
+times:
+  preparation: 15
+  resting: 0
+  cooking: 30
+categories:
+  - main
+tags:
+  - vegetarian
+  - vegan
+  - gluten-free
+  - dairy-free
+  - quick
+notes: ''
+dateAdded: '2026-03-14T16:13:18.550Z'
+dateModified: '2026-03-14T16:13:18.550Z'
