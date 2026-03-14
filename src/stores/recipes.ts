@@ -18,7 +18,7 @@ export const useRecipesStore = defineStore('recipes', () => {
 
     try {
       const { parseYaml } = await import('@/utils/yaml')
-      const modules = import.meta.glob('@/recipes/*.yml', { as: 'raw', eager: true })
+      const modules = import.meta.glob('@/recipes/*.yml', { query: '?raw', import: 'default', eager: true })
 
       const loadedRecipes = Object.values(modules).map((content) => parseYaml<Recipe>(content))
 
