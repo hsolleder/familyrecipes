@@ -247,9 +247,21 @@
             </v-card>
           </v-stepper-window-item>
 
-          <v-stepper-actions :disabled="!canProceed" @click:next="handleNext" @click:prev="step--">
-            <template #next>
-              <v-btn v-if="step < 5" :disabled="!canProceed" color="primary"> Next </v-btn>
+          <v-stepper-actions>
+            <template #prev="{ props }">
+              <v-btn v-bind="props" :disabled="step === 1" @click="handlePrev"> Previous </v-btn>
+            </template>
+
+            <template #next="{ props }">
+              <v-btn
+                v-if="step < 5"
+                v-bind="props"
+                :disabled="!canProceed"
+                color="primary"
+                @click="handleNext"
+              >
+                Next
+              </v-btn>
               <v-btn v-else :disabled="!canProceed" color="success" @click="generateYaml">
                 Generate YAML
               </v-btn>
@@ -445,6 +457,12 @@ function handleNext() {
   }
 }
 
+function handlePrev() {
+  if (step.value > 1) {
+    step.value--
+  }
+}
+
 function generateYaml() {
   const now = new Date()
   const dateString = now.toISOString()
@@ -456,7 +474,7 @@ function generateYaml() {
   // Determine source type and create RecipeSource object
   const sourceInput = recipe.value.sourceInput.trim()
   const isUrl = sourceInput.startsWith('http://') || sourceInput.startsWith('https://')
-  
+
   const source: RecipeSource = isUrl
     ? { type: 'link', url: sourceInput }
     : { type: 'book', bookName: sourceInput }
