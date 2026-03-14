@@ -5,247 +5,258 @@
         <div class="text-h4 mb-6">Add New Recipe</div>
 
         <v-stepper v-model="step" :items="stepItems" alt-labels>
-          <!-- Step 1: Basic Info -->
-          <v-stepper-window-item :value="1">
-            <v-card flat>
-              <v-card-text>
-                <v-form ref="basicForm" v-model="basicFormValid">
-                  <v-text-field
-                    v-model="recipe.name"
-                    label="Recipe Name"
-                    :rules="[rules.required]"
-                    variant="outlined"
-                    required
-                  />
+          <v-stepper-window>
+            <!-- Step 1: Basic Info -->
+            <v-stepper-window-item :value="1">
+              <v-card flat>
+                <v-card-text>
+                  <v-form ref="basicForm" v-model="basicFormValid">
+                    <v-text-field
+                      v-model="recipe.name"
+                      label="Recipe Name"
+                      :rules="[rules.required]"
+                      variant="outlined"
+                      required
+                    />
 
-                  <v-text-field
-                    v-model="recipe.sourceInput"
-                    label="Source (Book Title or URL)"
-                    :rules="[rules.required]"
+                    <v-text-field
+                      v-model="recipe.sourceInput"
+                      label="Source (Book Title or URL)"
+                      :rules="[rules.required]"
+                      variant="outlined"
+                      hint="e.g., 'Joy of Cooking' or 'https://example.com/recipe'"
+                      persistent-hint
+                      required
+                    />
+
+                    <v-text-field
+                      v-model.number="recipe.portions"
+                      label="Number of Portions"
+                      type="number"
+                      :rules="[rules.required, rules.positiveNumber]"
+                      variant="outlined"
+                      required
+                    />
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-stepper-window-item>
+
+            <!-- Step 2: Ingredients -->
+            <v-stepper-window-item :value="2">
+              <v-card flat>
+                <v-card-text>
+                  <v-form ref="ingredientsForm" v-model="ingredientsFormValid">
+                    <div
+                      v-for="(ingredient, index) in recipe.ingredients"
+                      :key="index"
+                      class="mb-4"
+                    >
+                      <v-row align="center">
+                        <v-col cols="12" sm="6">
+                          <v-autocomplete
+                            v-model="ingredient.name"
+                            :items="availableIngredients"
+                            label="Ingredient Name"
+                            :rules="[rules.required]"
+                            variant="outlined"
+                            clearable
+                          />
+                        </v-col>
+                        <v-col cols="12" sm="5">
+                          <v-text-field
+                            v-model="ingredient.amount"
+                            label="Amount (e.g., 200g, 2 cups)"
+                            :rules="[rules.required]"
+                            variant="outlined"
+                          />
+                        </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-btn
+                            icon="mdi-delete"
+                            variant="text"
+                            color="error"
+                            :disabled="recipe.ingredients.length === 1"
+                            @click="removeIngredient(index)"
+                          />
+                        </v-col>
+                      </v-row>
+                    </div>
+
+                    <v-btn
+                      prepend-icon="mdi-plus"
+                      variant="outlined"
+                      color="primary"
+                      @click="addIngredient"
+                    >
+                      Add Ingredient
+                    </v-btn>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-stepper-window-item>
+
+            <!-- Step 3: Times -->
+            <v-stepper-window-item :value="3">
+              <v-card flat>
+                <v-card-text>
+                  <v-form ref="timesForm" v-model="timesFormValid">
+                    <v-text-field
+                      v-model.number="recipe.times.preparation"
+                      label="Preparation Time (minutes)"
+                      type="number"
+                      :rules="[rules.nonNegativeNumber]"
+                      variant="outlined"
+                      hint="Time for prep work (chopping, mixing, etc.)"
+                      persistent-hint
+                    />
+
+                    <v-text-field
+                      v-model.number="recipe.times.resting"
+                      label="Resting Time (minutes)"
+                      type="number"
+                      :rules="[rules.nonNegativeNumber]"
+                      variant="outlined"
+                      hint="Time for dough rising, marinating, etc."
+                      persistent-hint
+                      class="mt-4"
+                    />
+
+                    <v-text-field
+                      v-model.number="recipe.times.cooking"
+                      label="Cooking Time (minutes)"
+                      type="number"
+                      :rules="[rules.nonNegativeNumber]"
+                      variant="outlined"
+                      hint="Time for baking, frying, simmering, etc."
+                      persistent-hint
+                      class="mt-4"
+                    />
+
+                    <v-alert v-if="totalTime > 0" type="info" variant="tonal" class="mt-4">
+                      Total time: {{ formatTime(totalTime) }}
+                    </v-alert>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-stepper-window-item>
+
+            <!-- Step 4: Categories & Tags -->
+            <v-stepper-window-item :value="4">
+              <v-card flat>
+                <v-card-text>
+                  <v-form ref="categoriesForm" v-model="categoriesFormValid">
+                    <v-select
+                      v-model="recipe.categories"
+                      :items="CATEGORIES"
+                      label="Categories"
+                      :rules="[rules.requiredArray]"
+                      variant="outlined"
+                      multiple
+                      chips
+                      hint="Select at least one category"
+                      persistent-hint
+                    />
+
+                    <v-select
+                      v-model="recipe.tags"
+                      :items="TAGS"
+                      label="Tags (Optional)"
+                      variant="outlined"
+                      multiple
+                      chips
+                      class="mt-4"
+                    />
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-stepper-window-item>
+
+            <!-- Step 5: Notes & Review -->
+            <v-stepper-window-item :value="5">
+              <v-card flat>
+                <v-card-text>
+                  <v-textarea
+                    v-model="recipe.notes"
+                    label="Cooking Instructions & Notes"
                     variant="outlined"
-                    hint="e.g., 'Joy of Cooking' or 'https://example.com/recipe'"
+                    rows="8"
+                    hint="Add step-by-step instructions, tips, or any other notes"
                     persistent-hint
-                    required
                   />
 
-                  <v-text-field
-                    v-model.number="recipe.portions"
-                    label="Number of Portions"
-                    type="number"
-                    :rules="[rules.required, rules.positiveNumber]"
-                    variant="outlined"
-                    required
-                  />
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-stepper-window-item>
+                  <v-divider class="my-6" />
 
-          <!-- Step 2: Ingredients -->
-          <v-stepper-window-item :value="2">
-            <v-card flat>
-              <v-card-text>
-                <v-form ref="ingredientsForm" v-model="ingredientsFormValid">
-                  <div v-for="(ingredient, index) in recipe.ingredients" :key="index" class="mb-4">
-                    <v-row align="center">
-                      <v-col cols="12" sm="6">
-                        <v-autocomplete
-                          v-model="ingredient.name"
-                          :items="availableIngredients"
-                          label="Ingredient Name"
-                          :rules="[rules.required]"
-                          variant="outlined"
-                          clearable
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="5">
-                        <v-text-field
-                          v-model="ingredient.amount"
-                          label="Amount (e.g., 200g, 2 cups)"
-                          :rules="[rules.required]"
-                          variant="outlined"
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="1">
-                        <v-btn
-                          icon="mdi-delete"
-                          variant="text"
-                          color="error"
-                          :disabled="recipe.ingredients.length === 1"
-                          @click="removeIngredient(index)"
-                        />
-                      </v-col>
-                    </v-row>
-                  </div>
+                  <div class="text-h6 mb-4">Preview</div>
 
-                  <v-btn
-                    prepend-icon="mdi-plus"
-                    variant="outlined"
-                    color="primary"
-                    @click="addIngredient"
-                  >
-                    Add Ingredient
-                  </v-btn>
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-stepper-window-item>
+                  <v-card variant="outlined">
+                    <v-card-title>{{ recipe.name }}</v-card-title>
+                    <v-card-subtitle>
+                      {{ recipe.sourceInput }} • {{ recipe.portions }} portions
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <div class="mb-2">
+                        <strong>Ingredients:</strong>
+                      </div>
+                      <ul>
+                        <li v-for="(ing, i) in recipe.ingredients" :key="i">
+                          {{ ing.amount }} {{ ing.name }}
+                        </li>
+                      </ul>
 
-          <!-- Step 3: Times -->
-          <v-stepper-window-item :value="3">
-            <v-card flat>
-              <v-card-text>
-                <v-form ref="timesForm" v-model="timesFormValid">
-                  <v-text-field
-                    v-model.number="recipe.times.preparation"
-                    label="Preparation Time (minutes)"
-                    type="number"
-                    :rules="[rules.nonNegativeNumber]"
-                    variant="outlined"
-                    hint="Time for prep work (chopping, mixing, etc.)"
-                    persistent-hint
-                  />
+                      <div class="mt-4 mb-2">
+                        <strong>Time:</strong> {{ formatTime(totalTime) }}
+                        <span v-if="recipe.times.preparation">
+                          ({{ recipe.times.preparation }} min prep
+                        </span>
+                        <span v-if="recipe.times.resting">
+                          + {{ recipe.times.resting }} min rest
+                        </span>
+                        <span v-if="recipe.times.cooking">
+                          + {{ recipe.times.cooking }} min cooking)
+                        </span>
+                      </div>
 
-                  <v-text-field
-                    v-model.number="recipe.times.resting"
-                    label="Resting Time (minutes)"
-                    type="number"
-                    :rules="[rules.nonNegativeNumber]"
-                    variant="outlined"
-                    hint="Time for dough rising, marinating, etc."
-                    persistent-hint
-                    class="mt-4"
-                  />
+                      <div class="mb-2">
+                        <strong>Categories:</strong>
+                        <v-chip
+                          v-for="cat in recipe.categories"
+                          :key="cat"
+                          size="small"
+                          class="ml-2"
+                        >
+                          {{ cat }}
+                        </v-chip>
+                      </div>
 
-                  <v-text-field
-                    v-model.number="recipe.times.cooking"
-                    label="Cooking Time (minutes)"
-                    type="number"
-                    :rules="[rules.nonNegativeNumber]"
-                    variant="outlined"
-                    hint="Time for baking, frying, simmering, etc."
-                    persistent-hint
-                    class="mt-4"
-                  />
+                      <div v-if="recipe.tags.length > 0" class="mb-2">
+                        <strong>Tags:</strong>
+                        <v-chip v-for="tag in recipe.tags" :key="tag" size="small" class="ml-2">
+                          {{ tag }}
+                        </v-chip>
+                      </div>
 
-                  <v-alert v-if="totalTime > 0" type="info" variant="tonal" class="mt-4">
-                    Total time: {{ formatTime(totalTime) }}
+                      <div v-if="recipe.notes" class="mt-4">
+                        <strong>Notes:</strong>
+                        <div class="mt-2" style="white-space: pre-wrap">{{ recipe.notes }}</div>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+
+                  <v-alert type="info" variant="tonal" class="mt-4">
+                    <div class="text-subtitle-2 mb-2">Next Steps:</div>
+                    <ol class="ml-4">
+                      <li>Review the recipe preview above</li>
+                      <li>Click "Generate YAML" to create the recipe file</li>
+                      <li>Copy the YAML content</li>
+                      <li>Create a new file in the repository</li>
+                      <li>Submit a pull request</li>
+                    </ol>
                   </v-alert>
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-stepper-window-item>
-
-          <!-- Step 4: Categories & Tags -->
-          <v-stepper-window-item :value="4">
-            <v-card flat>
-              <v-card-text>
-                <v-form ref="categoriesForm" v-model="categoriesFormValid">
-                  <v-select
-                    v-model="recipe.categories"
-                    :items="CATEGORIES"
-                    label="Categories"
-                    :rules="[rules.requiredArray]"
-                    variant="outlined"
-                    multiple
-                    chips
-                    hint="Select at least one category"
-                    persistent-hint
-                  />
-
-                  <v-select
-                    v-model="recipe.tags"
-                    :items="TAGS"
-                    label="Tags (Optional)"
-                    variant="outlined"
-                    multiple
-                    chips
-                    class="mt-4"
-                  />
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-stepper-window-item>
-
-          <!-- Step 5: Notes & Review -->
-          <v-stepper-window-item :value="5">
-            <v-card flat>
-              <v-card-text>
-                <v-textarea
-                  v-model="recipe.notes"
-                  label="Cooking Instructions & Notes"
-                  variant="outlined"
-                  rows="8"
-                  hint="Add step-by-step instructions, tips, or any other notes"
-                  persistent-hint
-                />
-
-                <v-divider class="my-6" />
-
-                <div class="text-h6 mb-4">Preview</div>
-
-                <v-card variant="outlined">
-                  <v-card-title>{{ recipe.name }}</v-card-title>
-                  <v-card-subtitle>
-                    {{ recipe.sourceInput }} • {{ recipe.portions }} portions
-                  </v-card-subtitle>
-                  <v-card-text>
-                    <div class="mb-2">
-                      <strong>Ingredients:</strong>
-                    </div>
-                    <ul>
-                      <li v-for="(ing, i) in recipe.ingredients" :key="i">
-                        {{ ing.amount }} {{ ing.name }}
-                      </li>
-                    </ul>
-
-                    <div class="mt-4 mb-2">
-                      <strong>Time:</strong> {{ formatTime(totalTime) }}
-                      <span v-if="recipe.times.preparation">
-                        ({{ recipe.times.preparation }} min prep
-                      </span>
-                      <span v-if="recipe.times.resting">
-                        + {{ recipe.times.resting }} min rest
-                      </span>
-                      <span v-if="recipe.times.cooking">
-                        + {{ recipe.times.cooking }} min cooking)
-                      </span>
-                    </div>
-
-                    <div class="mb-2">
-                      <strong>Categories:</strong>
-                      <v-chip v-for="cat in recipe.categories" :key="cat" size="small" class="ml-2">
-                        {{ cat }}
-                      </v-chip>
-                    </div>
-
-                    <div v-if="recipe.tags.length > 0" class="mb-2">
-                      <strong>Tags:</strong>
-                      <v-chip v-for="tag in recipe.tags" :key="tag" size="small" class="ml-2">
-                        {{ tag }}
-                      </v-chip>
-                    </div>
-
-                    <div v-if="recipe.notes" class="mt-4">
-                      <strong>Notes:</strong>
-                      <div class="mt-2" style="white-space: pre-wrap">{{ recipe.notes }}</div>
-                    </div>
-                  </v-card-text>
-                </v-card>
-
-                <v-alert type="info" variant="tonal" class="mt-4">
-                  <div class="text-subtitle-2 mb-2">Next Steps:</div>
-                  <ol class="ml-4">
-                    <li>Review the recipe preview above</li>
-                    <li>Click "Generate YAML" to create the recipe file</li>
-                    <li>Copy the YAML content</li>
-                    <li>Create a new file in the repository</li>
-                    <li>Submit a pull request</li>
-                  </ol>
-                </v-alert>
-              </v-card-text>
-            </v-card>
-          </v-stepper-window-item>
+                </v-card-text>
+              </v-card>
+            </v-stepper-window-item>
+          </v-stepper-window>
 
           <v-stepper-actions>
             <template #prev="{ props }">
