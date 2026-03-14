@@ -2,29 +2,29 @@ id: greek-salad-20260314
 name: Greek Salad
 source:
   type: link
-  url: "https://www.example.com/greek-salad"
+  url: 'https://www.example.com/greek-salad'
 
 ingredients:
   - name: tomato
-    amount: "4"
+    amount: '4'
     unit: pieces
   - name: cucumber
-    amount: "1"
+    amount: '1'
     unit: piece
   - name: bell pepper
-    amount: "1"
+    amount: '1'
     unit: piece
   - name: onion
-    amount: "1"
+    amount: '1'
     unit: piece
   - name: feta cheese
-    amount: "200"
+    amount: '200'
     unit: g
   - name: olives
-    amount: "100"
+    amount: '100'
     unit: g
   - name: olive oil
-    amount: "4"
+    amount: '4'
     unit: tbsp
 
 portions: 4
@@ -46,5 +46,5 @@ notes: |
   Best served fresh. Don't add dressing until just before serving.
   Perfect summer side dish.
 
-dateAdded: "2026-03-14"
-dateModified: "2026-03-14"
+dateAdded: '2026-03-14'
+dateModified: '2026-03-14'

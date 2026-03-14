@@ -2,29 +2,29 @@ id: tomato-soup-20260314
 name: Tomato Soup
 source:
   type: link
-  url: "https://www.example.com/tomato-soup"
+  url: 'https://www.example.com/tomato-soup'
 
 ingredients:
   - name: tomato
-    amount: "1000"
+    amount: '1000'
     unit: g
   - name: onion
-    amount: "1"
+    amount: '1'
     unit: piece
   - name: garlic
-    amount: "3"
+    amount: '3'
     unit: cloves
   - name: vegetable broth
-    amount: "500"
+    amount: '500'
     unit: ml
   - name: cream
-    amount: "100"
+    amount: '100'
     unit: ml
   - name: basil
-    amount: "10"
+    amount: '10'
     unit: leaves
   - name: olive oil
-    amount: "2"
+    amount: '2'
     unit: tbsp
   - name: salt
     amount: to taste
@@ -47,5 +47,5 @@ notes: |
   Best made with fresh summer tomatoes.
   Can be frozen for up to 3 months.
 
-dateAdded: "2026-03-14"
-dateModified: "2026-03-14"
+dateAdded: '2026-03-14'
+dateModified: '2026-03-14'

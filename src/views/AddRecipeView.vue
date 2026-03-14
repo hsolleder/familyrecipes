@@ -4,7 +4,7 @@
       <v-col cols="12" md="8" offset-md="2">
         <div class="text-h4 mb-6">Add New Recipe</div>
 
-        <v-stepper v-model="step" :items="stepItems" alt-labels>
+        <v-stepper v-model="step" :items="stepItems" alt-labels hide-actions>
           <v-stepper-window>
             <!-- Step 1: Basic Info -->
             <v-stepper-window-item :value="1">
@@ -313,7 +313,7 @@
                   <li>
                     Go to the
                     <a
-                      href="https://github.com/hsolleder/familyrecipes/new/main/public/recipes"
+                      href="https://github.com/hsolleder/familyrecipes/new/main/src/recipes"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

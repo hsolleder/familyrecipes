@@ -17,20 +17,10 @@ export const useRecipesStore = defineStore('recipes', () => {
     error.value = null
 
     try {
-      const recipeFiles = [
-        'pasta-carbonara-20260314.yml',
-        'tomato-soup-20260314.yml',
-        'chocolate-cake-20260314.yml',
-        'greek-salad-20260314.yml',
-        'roasted-vegetables-20260314.yml'
-      ]
+      const { parseYaml } = await import('@/utils/yaml')
+      const modules = import.meta.glob('@/recipes/*.yml', { as: 'raw', eager: true })
 
-      const { loadYamlFile } = await import('@/utils/yaml')
-      const loadedRecipes = await Promise.all(
-        recipeFiles.map((file) =>
-          loadYamlFile<Recipe>(`${import.meta.env.BASE_URL}recipes/${file}`)
-        )
-      )
+      const loadedRecipes = Object.values(modules).map((content) => parseYaml<Recipe>(content))
 
       // Calculate seasonality for each recipe
       if (ingredientsStore.database) {

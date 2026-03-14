@@ -2,21 +2,21 @@ id: pasta-carbonara-20260314
 name: Pasta Carbonara
 source:
   type: book
-  bookName: "The Silver Spoon"
-  pages: "145-146"
+  bookName: 'The Silver Spoon'
+  pages: '145-146'
 
 ingredients:
   - name: spaghetti
-    amount: "400"
+    amount: '400'
     unit: g
   - name: eggs
-    amount: "4"
+    amount: '4'
     unit: pieces
   - name: guanciale
-    amount: "150"
+    amount: '150'
     unit: g
   - name: pecorino romano
-    amount: "100"
+    amount: '100'
     unit: g
   - name: black pepper
     amount: to taste
@@ -39,5 +39,5 @@ notes: |
   Use room temperature eggs for best results.
   Traditional carbonara never uses cream!
 
-dateAdded: "2026-03-14"
-dateModified: "2026-03-14"
+dateAdded: '2026-03-14'
+dateModified: '2026-03-14'

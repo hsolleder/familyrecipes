@@ -19,7 +19,8 @@ export function useRecipes() {
         'tomato-soup-20260314.yml',
         'chocolate-cake-20260314.yml',
         'greek-salad-20260314.yml',
-        'roasted-vegetables-20260314.yml'
+        'roasted-vegetables-20260314.yml',
+        'spicy-tuna-crispy-rice-20260314.yml'
       ]
 
       const loadedRecipes = await Promise.all(

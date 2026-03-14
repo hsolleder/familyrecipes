@@ -1,0 +1,25 @@
+id: spicy-tuna-crispy-rice-20260314
+name: Spicy Tuna Crispy Rice
+source:
+  type: book
+  bookName: The Asian Pantry
+ingredients:
+  - name: Rice
+    amount: '159'
+  - name: Salt
+    amount: 0.5 tsp
+  - name: Cucumber
+    amount: '0.25'
+portions: 4
+times:
+  preparation: 5
+  resting: 0
+  cooking: 25
+categories:
+  - snack
+tags:
+  - quick
+  - asian
+notes: ''
+dateAdded: '2026-03-14T15:58:11.605Z'
+dateModified: '2026-03-14T15:58:11.605Z'

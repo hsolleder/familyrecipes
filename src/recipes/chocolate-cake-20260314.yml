@@ -2,36 +2,36 @@ id: chocolate-cake-20260314
 name: Chocolate Cake
 source:
   type: book
-  bookName: "Joy of Cooking"
-  pages: "728-729"
+  bookName: 'Joy of Cooking'
+  pages: '728-729'
 
 ingredients:
   - name: flour
-    amount: "250"
+    amount: '250'
     unit: g
   - name: sugar
-    amount: "300"
+    amount: '300'
     unit: g
   - name: cocoa powder
-    amount: "75"
+    amount: '75'
     unit: g
   - name: eggs
-    amount: "3"
+    amount: '3'
     unit: pieces
   - name: butter
-    amount: "200"
+    amount: '200'
     unit: g
   - name: milk
-    amount: "250"
+    amount: '250'
     unit: ml
   - name: baking powder
-    amount: "2"
+    amount: '2'
     unit: tsp
   - name: vanilla extract
-    amount: "1"
+    amount: '1'
     unit: tsp
   - name: salt
-    amount: "1"
+    amount: '1'
     unit: pinch
 
 portions: 8
@@ -51,5 +51,5 @@ notes: |
   Let the cake cool completely before frosting.
   Pairs well with vanilla ice cream.
 
-dateAdded: "2026-03-14"
-dateModified: "2026-03-14"
+dateAdded: '2026-03-14'
+dateModified: '2026-03-14'
