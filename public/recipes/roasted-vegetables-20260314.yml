@@ -1,0 +1,50 @@
+id: roasted-vegetables-20260314
+name: Roasted Vegetables
+source:
+  type: book
+  bookName: "Vegetable Kingdom"
+  pages: "88-90"
+
+ingredients:
+  - name: zucchini
+    amount: "2"
+    unit: pieces
+  - name: eggplant
+    amount: "1"
+    unit: piece
+  - name: bell pepper
+    amount: "2"
+    unit: pieces
+  - name: onion
+    amount: "1"
+    unit: piece
+  - name: garlic
+    amount: "4"
+    unit: cloves
+  - name: olive oil
+    amount: "4"
+    unit: tbsp
+  - name: salt
+    amount: to taste
+
+portions: 4
+
+times:
+  preparation: 15
+  resting: 0
+  cooking: 35
+
+categories:
+  - side
+
+tags:
+  - vegan
+  - vegetarian
+  - mediterranean
+
+notes: |
+  Cut vegetables into similar-sized pieces for even cooking.
+  Great as a side or mixed with pasta.
+
+dateAdded: "2026-03-14"
+dateModified: "2026-03-14"

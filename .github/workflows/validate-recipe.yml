@@ -1,0 +1,45 @@
+name: Validate Recipe
+
+on:
+  pull_request:
+    paths:
+      - 'public/recipes/*.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate YAML syntax
+        run: |
+          echo "Validating recipe YAML files..."
+          for file in public/recipes/*.yml; do
+            if [ -f "$file" ]; then
+              echo "Checking $file"
+              node -e "const yaml = require('js-yaml'); const fs = require('fs'); try { yaml.load(fs.readFileSync('$file', 'utf8')); console.log('✓ $file is valid'); } catch(e) { console.error('✗ $file is invalid:', e.message); process.exit(1); }"
+            fi
+          done
+
+      - name: Check for duplicate IDs
+        run: |
+          echo "Checking for duplicate recipe IDs..."
+          ids=$(grep -h "^id:" public/recipes/*.yml | cut -d' ' -f2 | sort)
+          duplicates=$(echo "$ids" | uniq -d)
+          if [ -n "$duplicates" ]; then
+            echo "✗ Duplicate IDs found:"
+            echo "$duplicates"
+            exit 1
+          else
+            echo "✓ No duplicate IDs found"
+          fi
