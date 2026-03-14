@@ -20,7 +20,7 @@ export const useRecipesStore = defineStore('recipes', () => {
       const { parseYaml } = await import('@/utils/yaml')
       const modules = import.meta.glob('@/recipes/*.yml', { query: '?raw', import: 'default', eager: true })
 
-      const loadedRecipes = Object.values(modules).map((content) => parseYaml<Recipe>(content))
+      const loadedRecipes = Object.values(modules).map((content) => parseYaml<Recipe>(content as string))
 
       // Calculate seasonality for each recipe
       if (ingredientsStore.database) {
