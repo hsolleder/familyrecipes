@@ -2,6 +2,7 @@ id: roasted-vegetables-20260314
 name: Roasted Vegetables
 source:
   type: book
+  name: 'Vegetable Kingdom'
   bookName: 'Vegetable Kingdom'
   pages: '88-90'
 

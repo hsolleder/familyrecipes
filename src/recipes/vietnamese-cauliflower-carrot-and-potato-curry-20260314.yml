@@ -2,7 +2,8 @@ id: vietnamese-cauliflower-carrot-and-potato-curry-20260314
 name: Vietnamese Cauliflower, Carrot and Potato Curry
 source:
   type: book
-  bookName: The Asian Pantry
+  name: 'The Asian Pantry'
+  bookName: 'The Asian Pantry'
 ingredients:
   - name: Onion
     amount: '1'

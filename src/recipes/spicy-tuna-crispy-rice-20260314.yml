@@ -2,7 +2,8 @@ id: spicy-tuna-crispy-rice-20260314
 name: Spicy Tuna Crispy Rice
 source:
   type: book
-  bookName: The Asian Pantry
+  name: 'The Asian Pantry'
+  bookName: 'The Asian Pantry'
 ingredients:
   - name: Rice
     amount: '159'

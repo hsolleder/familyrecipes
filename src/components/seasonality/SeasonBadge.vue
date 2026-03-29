@@ -1,5 +1,5 @@
 <template>
-  <div class="season-badge">
+  <div v-if="seasonality !== null" class="season-badge">
     <div class="d-flex align-center mb-1">
       <v-icon size="small" class="mr-1">mdi-leaf</v-icon>
       <span class="text-caption font-weight-medium">Seasonality</span>
@@ -22,13 +22,14 @@ import type { MonthlyAvailability } from '@/types/recipe'
 import { getCurrentMonth, MONTH_NAMES, getMonthIndex } from '@/utils/constants'
 
 const props = defineProps<{
-  seasonality: MonthlyAvailability
+  seasonality: MonthlyAvailability | null
 }>()
 
 const currentMonth = getCurrentMonth()
-const currentMonthScore = computed(
-  () => props.seasonality[currentMonth as keyof MonthlyAvailability]
-)
+const currentMonthScore = computed(() => {
+  if (!props.seasonality) return 100
+  return props.seasonality[currentMonth as keyof MonthlyAvailability]
+})
 const currentMonthName = computed(() => MONTH_NAMES[getMonthIndex(currentMonth)])
 
 function getColor(score: number): string {

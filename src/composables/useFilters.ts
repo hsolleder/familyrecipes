@@ -63,9 +63,14 @@ export function useFilters() {
       }
 
       // Seasonal filter (show only if >= 70% seasonal this month)
-      if (filters.seasonalThisMonth && recipe.seasonality) {
+      if (filters.seasonalThisMonth && recipe.seasonality !== undefined) {
+        // null seasonality = no veggies/fruits = always seasonal (year-round)
+        if (recipe.seasonality === null) {
+          return true
+        }
+
         const currentMonth = getCurrentMonth()
-        const score = recipe.seasonality[currentMonth as keyof typeof recipe.seasonality] || 100
+        const score = recipe.seasonality[currentMonth as keyof typeof recipe.seasonality] || 0
         if (score < 70) return false
       }
 
@@ -93,8 +98,15 @@ export function useFilters() {
       case 'seasonal-worst': {
         const currentMonth = getCurrentMonth()
         return sorted.sort((a, b) => {
-          const scoreA = a.seasonality?.[currentMonth as keyof typeof a.seasonality] || 100
-          const scoreB = b.seasonality?.[currentMonth as keyof typeof b.seasonality] || 100
+          // null seasonality = always available (score 100)
+          const scoreA =
+            a.seasonality === null
+              ? 100
+              : a.seasonality?.[currentMonth as keyof typeof a.seasonality] || 0
+          const scoreB =
+            b.seasonality === null
+              ? 100
+              : b.seasonality?.[currentMonth as keyof typeof b.seasonality] || 0
           return sortBy === 'seasonal-best' ? scoreB - scoreA : scoreA - scoreB
         })
       }

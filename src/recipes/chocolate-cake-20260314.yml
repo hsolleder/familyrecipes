@@ -2,6 +2,7 @@ id: chocolate-cake-20260314
 name: Chocolate Cake
 source:
   type: book
+  name: 'Joy of Cooking'
   bookName: 'Joy of Cooking'
   pages: '728-729'
 

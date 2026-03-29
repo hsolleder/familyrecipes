@@ -2,6 +2,7 @@ id: pasta-carbonara-20260314
 name: Pasta Carbonara
 source:
   type: book
+  name: 'The Silver Spoon'
   bookName: 'The Silver Spoon'
   pages: '145-146'
 

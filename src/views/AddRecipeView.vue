@@ -487,13 +487,14 @@ function generateYaml() {
   const isUrl = sourceInput.startsWith('http://') || sourceInput.startsWith('https://')
 
   const source: RecipeSource = isUrl
-    ? { type: 'link', url: sourceInput }
+    ? { type: 'link', name: sourceInput }
     : { type: 'book', bookName: sourceInput }
 
   // Build complete recipe object
   const completeRecipe: Recipe = {
     id: recipeId,
     name: recipe.value.name,
+    url: isUrl ? sourceInput : undefined,
     source,
     ingredients: recipe.value.ingredients,
     portions: recipe.value.portions,

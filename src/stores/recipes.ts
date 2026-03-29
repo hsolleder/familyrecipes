@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { Recipe } from '@/types/recipe'
 import { useIngredientsStore } from './ingredients'
+import { useSettingsStore } from './settings'
 import { useSeasonality } from '@/composables/useSeasonality'
 
 export const useRecipesStore = defineStore('recipes', () => {
@@ -10,6 +11,7 @@ export const useRecipesStore = defineStore('recipes', () => {
   const error = ref<string | null>(null)
 
   const ingredientsStore = useIngredientsStore()
+  const settingsStore = useSettingsStore()
   const { calculateRecipeSeasonality } = useSeasonality()
 
   async function loadRecipes() {
@@ -18,16 +20,30 @@ export const useRecipesStore = defineStore('recipes', () => {
 
     try {
       const { parseYaml } = await import('@/utils/yaml')
-      const modules = import.meta.glob('@/recipes/*.yml', { query: '?raw', import: 'default', eager: true })
+      const modules = import.meta.glob('@/recipes/*.yml', {
+        query: '?raw',
+        import: 'default',
+        eager: true
+      })
 
-      const loadedRecipes = Object.values(modules).map((content) => parseYaml<Recipe>(content as string))
+      const loadedRecipes = Object.values(modules).map((content) =>
+        parseYaml<Recipe>(content as string)
+      )
 
       // Calculate seasonality for each recipe
       if (ingredientsStore.database) {
-        recipes.value = loadedRecipes.map((recipe) => ({
-          ...recipe,
-          seasonality: calculateRecipeSeasonality(recipe, ingredientsStore.database!)
-        }))
+        recipes.value = loadedRecipes.map((recipe) => {
+          const { seasonality, seasonalIngredients } = calculateRecipeSeasonality(
+            recipe,
+            ingredientsStore.database!,
+            settingsStore.country
+          )
+          return {
+            ...recipe,
+            seasonality,
+            seasonalIngredients
+          }
+        })
       } else {
         recipes.value = loadedRecipes
       }
@@ -38,6 +54,27 @@ export const useRecipesStore = defineStore('recipes', () => {
       loading.value = false
     }
   }
+
+  // Watch for country changes and recalculate seasonality
+  watch(
+    () => settingsStore.country,
+    (newCountry) => {
+      if (ingredientsStore.database && recipes.value.length > 0) {
+        recipes.value = recipes.value.map((recipe) => {
+          const { seasonality, seasonalIngredients } = calculateRecipeSeasonality(
+            recipe,
+            ingredientsStore.database!,
+            newCountry
+          )
+          return {
+            ...recipe,
+            seasonality,
+            seasonalIngredients
+          }
+        })
+      }
+    }
+  )
 
   const getRecipeById = computed(() => {
     return (id: string) => recipes.value.find((r) => r.id === id)

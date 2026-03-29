@@ -1,8 +1,9 @@
 id: tomato-soup-20260314
 name: Tomato Soup
+url: 'https://www.example.com/tomato-soup'
 source:
   type: link
-  url: 'https://www.example.com/tomato-soup'
+  name: 'Example Website'
 
 ingredients:
   - name: tomato

@@ -36,9 +36,6 @@ export function validateRecipe(recipe: Partial<Recipe>): string[] {
   if (!recipe.source) {
     errors.push('Source is required')
   } else {
-    if (recipe.source.type === 'link' && !recipe.source.url) {
-      errors.push('URL is required for link source type')
-    }
     if (recipe.source.type === 'book' && !recipe.source.bookName) {
       errors.push('Book name is required for book source type')
     }

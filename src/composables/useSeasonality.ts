@@ -1,5 +1,5 @@
 import type { Recipe, MonthlyAvailability } from '@/types/recipe'
-import type { IngredientDatabase, Ingredient } from '@/types/ingredient'
+import type { IngredientDatabase, Ingredient, Country } from '@/types/ingredient'
 import { MONTHS } from '@/utils/constants'
 
 export function useSeasonality() {
@@ -23,32 +23,57 @@ export function useSeasonality() {
 
   function calculateRecipeSeasonality(
     recipe: Recipe,
-    ingredientDatabase: IngredientDatabase
-  ): MonthlyAvailability {
-    const seasonality: MonthlyAvailability = {} as MonthlyAvailability
+    ingredientDatabase: IngredientDatabase,
+    country: Country = 'switzerland'
+  ): {
+    seasonality: MonthlyAvailability | null
+    seasonalIngredients: string[]
+  } {
+    const seasonalIngredients: string[] = []
 
-    for (const month of MONTHS) {
-      let totalScore = 0
-      let ingredientCount = 0
+    // Only process vegetables and fruits
+    const relevantIngredients = recipe.ingredients.filter((recipeIng) => {
+      const ingredient = findIngredient(recipeIng.name, ingredientDatabase)
+      if (!ingredient) return false
 
-      for (const ingredient of recipe.ingredients) {
-        const dbIngredient = findIngredient(ingredient.name, ingredientDatabase)
+      const isVeggieOrFruit = ingredient.category === 'vegetable' || ingredient.category === 'fruit'
+      const hasAvailability = ingredient.availability?.[country]
 
-        if (dbIngredient) {
-          totalScore += dbIngredient.availability[month]
-        } else {
-          // Unknown ingredient: assume year-round availability
-          totalScore += 100
-        }
-
-        ingredientCount++
+      if (isVeggieOrFruit && hasAvailability) {
+        seasonalIngredients.push(ingredient.name)
+        return true
       }
+      return false
+    })
 
-      // Calculate average availability for this month (0 or 100 for binary, or average)
-      seasonality[month] = Math.round(totalScore / ingredientCount)
+    // If no vegetables/fruits, return null (not seasonal)
+    if (relevantIngredients.length === 0) {
+      return { seasonality: null, seasonalIngredients: [] }
     }
 
-    return seasonality
+    // Calculate seasonality for each month
+    const seasonality: MonthlyAvailability = {} as MonthlyAvailability
+
+    for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
+      const monthName = MONTHS[monthIndex]
+      const monthNumber = monthIndex + 1 // 1-based month number
+      let inSeasonCount = 0
+
+      for (const recipeIng of relevantIngredients) {
+        const ingredient = findIngredient(recipeIng.name, ingredientDatabase)
+        const availability = ingredient?.availability?.[country]
+
+        if (availability && availability.includes(monthNumber)) {
+          inSeasonCount++
+        }
+      }
+
+      // Score = percentage of ingredients in season (0-100)
+      const score = (inSeasonCount / relevantIngredients.length) * 100
+      seasonality[monthName] = Math.round(score)
+    }
+
+    return { seasonality, seasonalIngredients }
   }
 
   return {

@@ -1,6 +1,7 @@
 export interface Recipe {
   id: string
   name: string
+  url?: string
   source: RecipeSource
   ingredients: RecipeIngredient[]
   portions: number
@@ -10,12 +11,13 @@ export interface Recipe {
   notes?: string
   dateAdded: string
   dateModified: string
-  seasonality?: MonthlyAvailability
+  seasonality?: MonthlyAvailability | null
+  seasonalIngredients?: string[]
 }
 
 export interface RecipeSource {
   type: 'link' | 'book'
-  url?: string
+  name?: string
   bookName?: string
   pages?: string
 }

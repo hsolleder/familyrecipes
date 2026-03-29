@@ -33,11 +33,23 @@
                 <v-list-item-title>Source</v-list-item-title>
                 <v-list-item-subtitle>
                   <span v-if="recipe.source.type === 'book'">
-                    {{ recipe.source.bookName }}
+                    {{ recipe.source.name || recipe.source.bookName }}
                     <span v-if="recipe.source.pages">, pages {{ recipe.source.pages }}</span>
                   </span>
-                  <a v-else :href="recipe.source.url" target="_blank" rel="noopener">
-                    {{ recipe.source.url }}
+                  <span v-else>
+                    {{ recipe.source.name }}
+                  </span>
+                </v-list-item-subtitle>
+              </v-list-item>
+
+              <v-list-item v-if="recipe.url">
+                <template #prepend>
+                  <v-icon>mdi-open-in-new</v-icon>
+                </template>
+                <v-list-item-title>Recipe URL</v-list-item-title>
+                <v-list-item-subtitle>
+                  <a :href="recipe.url" target="_blank" rel="noopener">
+                    {{ recipe.url }}
                   </a>
                 </v-list-item-subtitle>
               </v-list-item>

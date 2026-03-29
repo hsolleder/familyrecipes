@@ -1,24 +1,14 @@
+export type Country = 'switzerland'
+
 export interface Ingredient {
   name: string
-  availability: {
-    january: number
-    february: number
-    march: number
-    april: number
-    may: number
-    june: number
-    july: number
-    august: number
-    september: number
-    october: number
-    november: number
-    december: number
-  }
+  availability?: Record<Country, number[]>
   category: string
 }
 
 export interface IngredientDatabase {
   vegetables: Record<string, Ingredient>
+  fruits: Record<string, Ingredient>
   proteins: Record<string, Ingredient>
   dairy: Record<string, Ingredient>
   grains: Record<string, Ingredient>
