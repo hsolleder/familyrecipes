@@ -24,3 +24,10 @@ coverage
 *.sln
 *.sw?
 .serena/*
+
+# Vercel
+.vercel
+
+# Environment variables
+.env.local
+.env*.local
