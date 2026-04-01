@@ -54,13 +54,15 @@
                     >
                       <v-row align="center">
                         <v-col cols="12" sm="6">
-                          <v-autocomplete
+                          <v-combobox
                             v-model="ingredient.name"
                             :items="availableIngredients"
                             label="Ingredient Name"
                             :rules="[rules.required]"
                             variant="outlined"
                             clearable
+                            hint="Type or select an ingredient"
+                            persistent-hint
                           />
                         </v-col>
                         <v-col cols="12" sm="5">
