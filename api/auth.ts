@@ -4,13 +4,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { code, state } = req.query
 
   if (!code) {
-    // Initiate OAuth flow
+    // Initiate OAuth flow (GitHub App)
     const clientId = process.env.GITHUB_CLIENT_ID
     const protocol = req.headers['x-forwarded-proto'] || 'https'
     const host = req.headers.host
     const redirectUri = `${protocol}://${host}/api/auth`
-    const scope = 'repo'
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state || 'random'}`
+
+    // GitHub Apps don't use scopes - they use fine-grained permissions set during app configuration
+    // The permissions (contents:read + pull_requests:write) are already configured in the GitHub App settings
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state || 'random'}`
 
     return res.redirect(authUrl)
   }
