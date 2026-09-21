@@ -1,0 +1,20 @@
+id: chocolate-tart-20260921
+name: chocolate tart
+source:
+  type: book
+  bookName: asasd
+ingredients:
+  - name: Chocolate
+    amount: '150'
+portions: 4
+times:
+  preparation: 1
+  resting: 2
+  cooking: 3
+categories:
+  - dessert
+tags:
+  - dairy-free
+notes: ''
+dateAdded: '2026-09-21T17:11:33.737Z'
+dateModified: '2026-09-21T17:11:33.737Z'
