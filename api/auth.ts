@@ -32,12 +32,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
     })
 
-    const data = (await tokenResponse.json()) as { access_token?: string; error?: string }
+    const data = (await tokenResponse.json()) as {
+      access_token?: string
+      refresh_token?: string
+      expires_in?: number
+      error?: string
+    }
 
     if (data.access_token) {
       // Redirect back to frontend with token
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
-      return res.redirect(`${frontendUrl}?github_token=${data.access_token}`)
+      const params = new URLSearchParams({ github_token: data.access_token })
+      if (data.refresh_token) {
+        params.set('github_refresh', data.refresh_token)
+      }
+      if (data.expires_in) {
+        params.set('github_expires', String(data.expires_in))
+      }
+      return res.redirect(`${frontendUrl}?${params.toString()}`)
     } else {
       return res.status(400).json({ error: 'Failed to obtain access token', details: data })
     }

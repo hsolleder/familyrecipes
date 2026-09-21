@@ -169,10 +169,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       prNumber: prData.number
     })
   } catch (error: any) {
+    const message = String(error?.message || 'Unknown error')
+    const unauthorized = /bad credentials|requires authentication/i.test(message)
     console.error('Error creating PR:', error)
-    return res.status(500).json({
-      error: 'Failed to create PR',
-      details: error.message
-    })
+    return res.status(unauthorized ? 401 : 500).json(
+      unauthorized
+        ? { error: 'Not authenticated', details: message }
+        : { error: 'Failed to create PR', details: message }
+    )
   }
 }

@@ -1,5 +1,7 @@
 import type { Category, Tag } from '@/types/recipe'
 
+export const ADD_RECIPE_DRAFT_KEY = 'add-recipe-draft'
+
 export const CATEGORIES: Category[] = [
   'entry',
   'main',

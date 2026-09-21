@@ -3,6 +3,8 @@ import { ref } from 'vue'
 // Production Vercel API URL
 const VERCEL_API_URL = import.meta.env.VITE_VERCEL_API_URL || 'https://familyrecipes-nu.vercel.app'
 const TOKEN_KEY = 'github_token'
+const REFRESH_KEY = 'github_refresh_token'
+const EXPIRY_KEY = 'github_expires_at'
 
 export function useGitHub() {
   const token = ref<string | null>(localStorage.getItem(TOKEN_KEY))
@@ -24,9 +26,63 @@ export function useGitHub() {
     localStorage.setItem(TOKEN_KEY, newToken)
   }
 
+  function saveRefreshToken(newRefreshToken: string) {
+    localStorage.setItem(REFRESH_KEY, newRefreshToken)
+  }
+
+  function saveTokenExpiry(expiresAt: number) {
+    localStorage.setItem(EXPIRY_KEY, expiresAt.toString())
+  }
+
   function clearToken() {
     token.value = null
     localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(REFRESH_KEY)
+    localStorage.removeItem(EXPIRY_KEY)
+  }
+
+  async function refreshAccessToken(): Promise<boolean> {
+    const refreshToken = localStorage.getItem(REFRESH_KEY)
+    if (!refreshToken) {
+      return false
+    }
+
+    try {
+      const response = await fetch(`${VERCEL_API_URL}/api/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      })
+
+      if (!response.ok) {
+        clearToken()
+        return false
+      }
+
+      const data = (await response.json()) as {
+        access_token?: string
+        refresh_token?: string
+        expires_in?: number
+      }
+
+      if (!data.access_token) {
+        clearToken()
+        return false
+      }
+
+      saveToken(data.access_token)
+      if (data.refresh_token) {
+        saveRefreshToken(data.refresh_token)
+      }
+      if (data.expires_in) {
+        saveTokenExpiry(Date.now() + data.expires_in * 1000)
+      }
+      return true
+    } catch {
+      return false
+    }
   }
 
   async function createPullRequest(params: {
@@ -37,6 +93,14 @@ export function useGitHub() {
   }): Promise<{ success: boolean; prUrl?: string; error?: string }> {
     if (!token.value) {
       return { success: false, error: 'Not authenticated' }
+    }
+
+    const expiresAt = Number(localStorage.getItem(EXPIRY_KEY))
+    if (Number.isFinite(expiresAt) && Date.now() >= expiresAt) {
+      const refreshed = await refreshAccessToken()
+      if (!refreshed) {
+        return { success: false, error: 'Not authenticated' }
+      }
     }
 
     loading.value = true
@@ -80,8 +144,13 @@ export function useGitHub() {
 
       const data = await response.json()
 
+      if (response.status === 401) {
+        clearToken()
+        return { success: false, error: 'Not authenticated' }
+      }
+
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create PR')
+        throw new Error(data.details || data.error || 'Failed to create PR')
       }
 
       return {
@@ -106,6 +175,8 @@ export function useGitHub() {
     isAuthenticated,
     initiateAuth,
     saveToken,
+    saveRefreshToken,
+    saveTokenExpiry,
     clearToken,
     createPullRequest
   }

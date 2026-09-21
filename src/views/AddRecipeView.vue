@@ -426,7 +426,7 @@
             <v-card-actions>
               <v-spacer />
               <v-btn variant="text" @click="showAuthPrompt = false">Cancel</v-btn>
-              <v-btn color="primary" @click="github.initiateAuth()">
+              <v-btn color="primary" @click="connectWithGitHub()">
                 <v-icon start>mdi-github</v-icon>
                 Connect with GitHub
               </v-btn>
@@ -447,12 +447,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useIngredientsStore } from '@/stores/ingredients'
 import { generateRecipeId } from '@/utils/slugify'
 import { stringifyYaml } from '@/utils/yaml'
 import { formatTime } from '@/utils/time'
-import { CATEGORIES, TAGS } from '@/utils/constants'
+import { CATEGORIES, TAGS, ADD_RECIPE_DRAFT_KEY } from '@/utils/constants'
 import type { Recipe, RecipeSource, RecipeIngredient, Category, Tag } from '@/types/recipe'
 import { useGitHub } from '@/composables/useGitHub'
 import { useMissingIngredients, type NewIngredient } from '@/composables/useMissingIngredients'
@@ -679,6 +679,54 @@ function generateModifiedIngredientsYaml(): string {
   return stringifyYaml(currentDb)
 }
 
+interface RecipeDraft {
+  step: number
+  recipe: RecipeFormData
+  newIngredients: NewIngredient[]
+  skipMissingIngredients: boolean
+}
+
+function saveDraft() {
+  const draft: RecipeDraft = {
+    step: step.value,
+    recipe: JSON.parse(JSON.stringify(recipe.value)),
+    newIngredients: JSON.parse(JSON.stringify(newIngredients.value)),
+    skipMissingIngredients: skipMissingIngredients.value
+  }
+  sessionStorage.setItem(ADD_RECIPE_DRAFT_KEY, JSON.stringify(draft))
+}
+
+function restoreDraft(): boolean {
+  const raw = sessionStorage.getItem(ADD_RECIPE_DRAFT_KEY)
+  if (!raw) {
+    return false
+  }
+  sessionStorage.removeItem(ADD_RECIPE_DRAFT_KEY)
+  try {
+    const draft = JSON.parse(raw) as Partial<RecipeDraft>
+    if (draft.recipe) {
+      recipe.value = draft.recipe
+    }
+    if (Array.isArray(draft.newIngredients)) {
+      newIngredients.value = draft.newIngredients
+    }
+    skipMissingIngredients.value = draft.skipMissingIngredients ?? false
+    step.value = draft.step ?? 6
+    return true
+  } catch {
+    return false
+  }
+}
+
+function connectWithGitHub() {
+  saveDraft()
+  github.initiateAuth()
+}
+
+onMounted(() => {
+  restoreDraft()
+})
+
 async function createPR() {
   prError.value = ''
 
@@ -710,6 +758,9 @@ async function createPR() {
   if (result.success && result.prUrl) {
     prUrl.value = result.prUrl
     showPRDialog.value = true
+  } else if (result.error === 'Not authenticated') {
+    saveDraft()
+    showAuthPrompt.value = true
   } else {
     prError.value = result.error || 'Unknown error occurred'
   }
